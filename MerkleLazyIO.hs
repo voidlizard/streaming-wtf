@@ -8,6 +8,8 @@ import Data.ByteString qualified as B
 import Data.ByteString.Lazy qualified as LBS
 import Data.ByteString (ByteString)
 import Data.Int
+import Control.Exception
+import Control.DeepSeq (force)
 
 import System.IO
 
@@ -22,10 +24,12 @@ main :: IO ()
 main = do
   hSetBuffering stdin NoBuffering
 
-  input_data <- LBS.getContents
-  let qq = input_data 
-            & splits (256*1024)
-            & fmap LBS.toStrict
-            & fmap (B.copy . B.take 32)
+  input_data <- LBS.hGetContents stdin
+  qq <- evaluate $ input_data 
+          & splits (256*1024)
+          & fmap LBS.toStrict
+          & fmap (B.copy . B.take 32)
+          & force
+  
   print (length qq)
 

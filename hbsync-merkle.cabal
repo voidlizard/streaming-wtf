@@ -93,5 +93,6 @@ executable hbsync-merkle-lazy-io
     -- other-extensions:
     build-depends:   base ^>=4.15.1.0
                    , bytestring
+                   , deepseq
     hs-source-dirs:   .
     default-language: Haskell2010
