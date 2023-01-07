@@ -14,6 +14,7 @@ import Data.Word
 import Streamly.Data.Unfold qualified as Unfold
 import Streamly.Data.Fold qualified as Fold
 import Streamly.FileSystem.Handle qualified as Handle
+import Streamly.Internal.Data.Array.Foreign.Type qualified as Array
 import Streamly.Prelude qualified as Stream
 
 
@@ -23,10 +24,9 @@ main = do
   hSetBuffering stdin NoBuffering
 
   let bebe = Handle.read @IO
-  qq <- Stream.unfold bebe stdin
-                & Stream.chunksOf (256 * 1024) Fold.toList
-                & fmap (B.take 32 . B.pack)
-                & Stream.toList
+  qq <- Stream.unfold Handle.readChunksWithBufferOf (256*1024, stdin)
+                & fmap (B.pack . Array.toList . fst . Array.splitAt 32)
+                & Stream.toList 
 
   print (length qq)
 
