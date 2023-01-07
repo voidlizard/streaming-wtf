@@ -17,9 +17,10 @@ readChunked :: MonadIO m => Handle -> Int -> S.Stream (S.Of ByteString) m ()
 readChunked handle size = fix \next -> do
   chunk <- liftIO do
     B.hGet handle size
-  unless (B.null chunk) do
-    S.yield chunk
-    next
+  unless
+    do B.null chunk
+    do S.yield chunk
+       next
 
 main :: IO ()
 main = do
